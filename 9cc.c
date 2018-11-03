@@ -14,6 +14,22 @@ int main(int argc, char **argv) {
 
   char *p = argv[1];
   printf("  mov rax, %ld\n", strtol(p, &p, 10));
+
+  while (*p) {
+    if (*p == '+') {
+      p++;
+      printf("  add rax, %ld\n", strtol(p, &p, 10));
+      continue;
+    }
+
+    if (*p == '-') {
+      p++;
+      printf("  sub rax, %ld\n", strtol(p, &p, 10));
+      continue;
+    }
+
+    fprintf(stderr, "unexpected charactor.\n");
+  }
   
   printf("  ret\n");
   
