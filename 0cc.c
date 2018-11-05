@@ -1,6 +1,6 @@
 /**
- * C compiler 9cc
- * kaname.g@gmail.com
+ * C compiler 0cc
+ * @author kaname.g@gmail.com
  */
 
 #include <stdio.h>
