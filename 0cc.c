@@ -8,6 +8,26 @@
 #include <ctype.h>
 
 /**
+   type of node
+*/
+enum {
+      NODE_NUM = 256, // integer node
+};
+
+
+/**
+   node data type
+*/
+typedef struct Node {
+  int type;            // type of node
+  struct Node *left;   // left hand side node
+  struct Node *right;  // right hand side node
+  int value;
+} Node;
+
+
+
+/**
    type of token
 */
 enum {
