@@ -6,6 +6,15 @@
 #include <ctype.h>
 
 /**
+   Display error message
+ */
+#define ERROR(fmt, ...)					\
+  fprintf(stderr, "%s(%d): ", __FILE__, __LINE__);	\
+  fprintf(stderr, fmt, ##__VA_ARGS__);			\
+  exit(1);
+
+
+/**
  * Define data type
  */
 

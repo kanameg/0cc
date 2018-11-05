@@ -202,7 +202,7 @@ int main(int argc, char **argv) {
     fprintf(stderr, "Not correct number of argument.\n");
     return 1;
   }
-
+  
   tokenize(argv[1]);
   print_token(tokens);
 
