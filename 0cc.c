@@ -108,13 +108,13 @@ int main(int argc, char **argv) {
 
   tokenize(argv[1]);
   //print_token(tokens);
-  
+
   printf(".intel_syntax noprefix\n");
   printf("\n");
-  printf(".global _main\n");
+  printf(".global _main\n"); // change main to _main for mac
   printf("\n");
   printf(".text\n");
-  printf("_main:\n");
+  printf("_main:\n"); // change main to _main for mac
 
   int i = 0;
   // check first token is number?
