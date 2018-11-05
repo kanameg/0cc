@@ -1,0 +1,13 @@
+% 四則演算 文法
+
+expr	: expr '+' term
+	| expr '-' term
+	| term
+
+term 	: term '*' factor
+	| term '/' factor
+	| factor
+
+factor 	: '(' expr ')'
+	| number
+
