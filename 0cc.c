@@ -46,22 +46,24 @@ void delete_node(Node *node) {
 
 
 /**
-   Parse factor
+   Parse expression
 */
-Node *factor() {
-  if (tokens[p].type == TOKEN_NUM)
-    return new_num_node(tokens[p].value);
+Node *expr() {
+  Node *left = term();
   
-  if (tokens[p].type == '(') {
+  if (tokens[p].type == TOKEN_EOT)
+    return left;
+  
+  if (tokens[p].type == '+') {
     p++;
-    Node *node = expr();
-    if (tokens[p].type != ')') {
-      error(p);
-    }
-    p++;
-    return node;
+    return new_op_node('+', left, expr());
   }
-  
+
+  if (tokens[p].type == '-') {
+    p++;
+    return new_op_node('-', left, expr());
+  }
+
   error(p);
   return NULL;
 }
@@ -92,24 +94,22 @@ Node *term() {
 
 
 /**
-   Parse expression
+   Parse factor
 */
-Node *expr() {
-  Node *left = term();
-
-  if (tokens[p].type == TOKEN_EOT)
-    return left;
+Node *factor() {
+  if (tokens[p].type == TOKEN_NUM)
+    return new_num_node(tokens[p++].value);
   
-  if (tokens[p].type == '+') {
+  if (tokens[p].type == '(') {
     p++;
-    return new_op_node('+', left, expr());
-  }
-
-  if (tokens[p].type == '-') {
+    Node *node = expr();
+    if (tokens[p].type != ')') {
+      error(p);
+    }
     p++;
-    return new_op_node('-', left, expr());
+    return node;
   }
-
+  
   error(p);
   return NULL;
 }
@@ -162,15 +162,26 @@ void tokenize(char *p) {
 */
 void print_token(Token *tokens) {
   int i = 0;
+  fprintf(stderr, "----------------------------------------------------\n");
   while (tokens[i].type != TOKEN_EOT) {
     fprintf(stderr, "Token[%d]\n", i);
-    if (tokens[i].type == TOKEN_NUM)
+    if (tokens[i].type == TOKEN_NUM) {
       fprintf(stderr, "	value: %d\n", tokens[i].value);
-    if (tokens[i].type == '+' || tokens[i].type == '-')
+      fprintf(stderr, "	type: %d\n", tokens[i].type);
+      fprintf(stderr, "	input: %s\n", tokens[i].input);
+    }
+    if (tokens[i].type == '+' || tokens[i].type == '-') {
       fprintf(stderr, "	value: %c\n", tokens[i].value);
+      fprintf(stderr, "	type: %d\n", tokens[i].type);
+      fprintf(stderr, "	input: %s\n", tokens[i].input);
+    }
     i++;
   }
-  fprintf(stderr, "EOT\n\n");
+  fprintf(stderr, "EOT\n");
+  fprintf(stderr, "	value: %c\n", tokens[i].value);
+  fprintf(stderr, "	type: %d\n", tokens[i].type);
+  fprintf(stderr, "	input: %s\n", tokens[i].input);
+  fprintf(stderr, "----------------------------------------------------\n");
 }
 
 
@@ -193,7 +204,9 @@ int main(int argc, char **argv) {
   }
 
   tokenize(argv[1]);
-  //print_token(tokens);
+  print_token(tokens);
+
+  //expr();
 
   printf(".intel_syntax noprefix\n");
   printf("\n");
