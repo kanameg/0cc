@@ -7,46 +7,112 @@
 #include <stdlib.h>
 #include <ctype.h>
 
-/**
-   type of node
-*/
-enum {
-      NODE_NUM = 256, // integer node
-};
-
+#include "0cc.h"
 
 /**
-   node data type
+   Make new operator node
 */
-typedef struct Node {
-  int type;            // type of node
-  struct Node *left;   // left hand side node
-  struct Node *right;  // right hand side node
-  int value;
-} Node;
-
+Node *new_op_node(int op, Node *left, Node *right) {
+  Node *node = malloc(sizeof(Node));
+  
+  node->type = op;
+  node->left = left;
+  node->right = right;
+  
+  return node;
+}
 
 
 /**
-   type of token
+   Make new number node
 */
-enum {
-      TOKEN_NUM = 256, // integer token
-      TOKEN_EOT,       // end of token
-};
+Node *new_num_node(int value) {
+  Node *node = malloc(sizeof(Node));
+  
+  node->type = NODE_NUM;
+  node->value = value;
+  
+  return node;
+}
 
 
 /**
-   token data type
+   Delete node
 */
-typedef struct {
-  int type;   // type of token
-  int value;  // token value
-  char *input; // token string (for error message)
-} Token;
+void delete_node(Node *node) {
+  if (node != NULL)
+    free(node);
+}
 
 
-Token tokens[100];  // result of tokenized
+/**
+   Parse factor
+*/
+Node *factor() {
+  if (tokens[p].type == TOKEN_NUM)
+    return new_num_node(tokens[p].value);
+  
+  if (tokens[p].type == '(') {
+    p++;
+    Node *node = expr();
+    if (tokens[p].type != ')') {
+      error(p);
+    }
+    p++;
+    return node;
+  }
+  
+  error(p);
+  return NULL;
+}
+
+
+/**
+   Parse term
+*/
+Node *term() {
+  Node *left = factor();
+
+  if (tokens[p].type == TOKEN_EOT)
+    return left;
+
+  if (tokens[p].type == '*') {
+    p++;
+    return new_op_node('*', left, term());
+  }
+
+  if (tokens[p].type == '/') {
+    p++;
+    return new_op_node('/', left, term());
+  }
+  
+  error(p);
+  return NULL;
+}
+
+
+/**
+   Parse expression
+*/
+Node *expr() {
+  Node *left = term();
+
+  if (tokens[p].type == TOKEN_EOT)
+    return left;
+  
+  if (tokens[p].type == '+') {
+    p++;
+    return new_op_node('+', left, expr());
+  }
+
+  if (tokens[p].type == '-') {
+    p++;
+    return new_op_node('-', left, expr());
+  }
+
+  error(p);
+  return NULL;
+}
 
 
 /**
@@ -169,4 +235,3 @@ int main(int argc, char **argv) {
   
   return 0;
 }
-
