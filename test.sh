@@ -5,7 +5,7 @@ try() {
     input="$2"
 
     ./0cc "$input" > tmp.s
-    gcc -o tmp tmp.s
+    gcc -arch x86_64 -o tmp tmp.s
     ./tmp
     actual="$?"
 

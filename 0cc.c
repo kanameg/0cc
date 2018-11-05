@@ -110,8 +110,11 @@ int main(int argc, char **argv) {
   //print_token(tokens);
   
   printf(".intel_syntax noprefix\n");
-  printf(".global main\n");
-  printf("main:\n");
+  printf("\n");
+  printf(".global _main\n");
+  printf("\n");
+  printf(".text\n");
+  printf("_main:\n");
 
   int i = 0;
   // check first token is number?
