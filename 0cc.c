@@ -129,7 +129,8 @@ void tokenize(char *p) {
     }
     
     // token char
-    if (*p == '+' || *p == '-') {
+    if (*p == '+' || *p == '-' || *p == '*' || *p == '/' ||
+	*p == '(' || *p == ')') {
       tokens[i].type = *p;
       tokens[i].input = p;
       tokens[i].value = *p;
@@ -170,7 +171,9 @@ void print_token(Token *tokens) {
       fprintf(stderr, "	type: %d\n", tokens[i].type);
       fprintf(stderr, "	input: %s\n", tokens[i].input);
     }
-    if (tokens[i].type == '+' || tokens[i].type == '-') {
+    if (tokens[i].type == '+' || tokens[i].type == '-' ||
+	tokens[i].type == '*' || tokens[i].type == '/' ||
+	tokens[i].type == '(' || tokens[i].type == ')') {
       fprintf(stderr, "	value: %c\n", tokens[i].value);
       fprintf(stderr, "	type: %d\n", tokens[i].type);
       fprintf(stderr, "	input: %s\n", tokens[i].input);
@@ -206,7 +209,7 @@ int main(int argc, char **argv) {
   tokenize(argv[1]);
   print_token(tokens);
 
-  //expr();
+  expr();
 
   printf(".intel_syntax noprefix\n");
   printf("\n");
