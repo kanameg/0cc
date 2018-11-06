@@ -210,6 +210,7 @@ int main(int argc, char **argv) {
   print_token(tokens);
 
   //expr();
+  factor();
 
   printf(".intel_syntax noprefix\n");
   printf("\n");
