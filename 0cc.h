@@ -15,7 +15,7 @@
 
 
 /**
- * Define data type
+ * Declare data type
  */
 
 /**
@@ -58,7 +58,7 @@ typedef struct {
 
 
 /**
- * Define function
+ * Declare function
  */
 Node *new_op_node(int op, Node *left, Node *right);
 Node *new_num_node(int value);
@@ -74,10 +74,10 @@ void print_token(Token *tokens);
 void error(int i);
 
 /**
- *  Global data
+ *  Declare global data
  */
-int p = 0;
-Token tokens[100];  // result of tokenized
+extern int p;
+extern Token tokens[100];  // result of tokenized
 
 
 #endif // __0CC_H__

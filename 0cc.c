@@ -9,6 +9,14 @@
 
 #include "0cc.h"
 
+
+/**
+   Define global data
+ */
+int p = 0;
+Token tokens[100];  // result of tokenized
+
+
 /**
    Make new operator node
 */
@@ -46,10 +54,11 @@ void delete_node(Node *node) {
 
 
 /**
-   Parse expression
+   Expression parser
 */
+/*
 Node *expr() {
-  Node *left = term();
+  Node *left = factor();
   
   if (tokens[p].type == TOKEN_EOT)
     return left;
@@ -63,15 +72,16 @@ Node *expr() {
     p++;
     return new_op_node('-', left, expr());
   }
-
-  error(p);
-  return NULL;
+  
+  ERROR("Unexpected expression token: %s\n", tokens[p].input);
 }
+*/
 
 
 /**
-   Parse term
+   Term parser
 */
+/*
 Node *term() {
   Node *left = factor();
 
@@ -91,27 +101,31 @@ Node *term() {
   error(p);
   return NULL;
 }
+*/
 
 
 /**
-   Parse factor
+   Factor parser
 */
 Node *factor() {
-  if (tokens[p].type == TOKEN_NUM)
-    return new_num_node(tokens[p++].value);
+  if (tokens[p].type == TOKEN_NUM) {
+    Node *node = new_num_node(tokens[p].value);
+    p++;
+    return node;
+  }
   
   if (tokens[p].type == '(') {
     p++;
-    Node *node = expr();
+    //Node *node = expr();
+    Node *node = factor();
     if (tokens[p].type != ')') {
-      error(p);
+      ERROR("Expected ), but token is: %s\n", tokens[p].input);
     }
     p++;
     return node;
   }
   
-  error(p);
-  return NULL;
+  ERROR("Unexpected factor token: %s\n", tokens[p].input);
 }
 
 
@@ -159,7 +173,7 @@ void tokenize(char *p) {
 
 
 /**
-   Printing all tokens
+   Print all tokens
 */
 void print_token(Token *tokens) {
   int i = 0;
@@ -189,11 +203,53 @@ void print_token(Token *tokens) {
 
 
 /**
-   Printing token error message
-*/
-void error(int i) {
-  fprintf(stderr, "Unexpected token: %s \n", tokens[i].input);
-  exit(1);
+   Print all nodes
+ */
+void print_node(Node *node) {
+  if (node->type == NODE_NUM) {
+    fprintf(stderr, "value: %d\n", node->value);
+    fprintf(stderr, "type: %d\n", node->type);
+    return;
+  }
+
+  print_node(node->left);
+  print_node(node->right);
+
+  switch (node->type) {
+  case '+':
+    fprintf(stderr, "value: %d\n", node->value);
+    fprintf(stderr, "type: %d\n", node->type);
+    break;
+  case '-':
+    fprintf(stderr, "value: %d\n", node->value);
+    fprintf(stderr, "type: %d\n", node->type);
+    break;
+  }
+
+  return;
+}
+
+
+void trace_node_tree(Node *node) {
+  if (node->type == NODE_NUM) {
+    printf("  mov rax, %d\n", node->value);
+    return;   // return because leaf node.
+  }
+
+  // internal node
+  trace_node_tree(node->left);   // trace left hand tree
+  trace_node_tree(node->right);  // trace right hand tree
+  
+  switch (node->type) {
+  case '+':
+    printf("  add rax, %d\n", node->value);
+    break;
+  case '-':
+    printf("  sub rax, %d\n", node->value);
+    break;
+  }
+  
+  return;
 }
 
 
@@ -209,8 +265,8 @@ int main(int argc, char **argv) {
   tokenize(argv[1]);
   print_token(tokens);
 
-  //expr();
-  factor();
+  Node *node = factor();
+  print_node(node);
 
   printf(".intel_syntax noprefix\n");
   printf("\n");
@@ -219,34 +275,7 @@ int main(int argc, char **argv) {
   printf(".text\n");
   printf("_main:\n"); // change main to _main for mac
 
-  int i = 0;
-  // check first token is number?
-  if (tokens[i].type != TOKEN_NUM)
-    error(i);
-  printf("  mov rax, %d\n", tokens[i].value);
-  i++;
-
-  while (tokens[i].type != TOKEN_EOT) {
-    if (tokens[i].type == '+') {
-      i++;
-      if (tokens[i].type != TOKEN_NUM)
-	error(i);
-      printf("  add rax, %d\n", tokens[i].value);
-      i++;
-      continue;
-    }
-
-    if (tokens[i].type == '-') {
-      i++;
-      if (tokens[i].type != TOKEN_NUM)
-	error(i);
-      printf("  sub rax, %d\n", tokens[i].value);
-      i++;
-      continue;
-    }
-
-    error(i);
-  }
+  trace_node_tree(node);
   
   printf("  ret\n");
   
