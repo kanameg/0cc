@@ -209,7 +209,7 @@ int main(int argc, char **argv) {
   tokenize(argv[1]);
   print_token(tokens);
 
-  expr();
+  //expr();
 
   printf(".intel_syntax noprefix\n");
   printf("\n");
