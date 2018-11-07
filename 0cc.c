@@ -56,7 +56,6 @@ void delete_node(Node *node) {
 /**
    Expression parser
 */
-/*
 Node *expr() {
   Node *left = factor();
   
@@ -67,7 +66,7 @@ Node *expr() {
     p++;
     return new_op_node('+', left, expr());
   }
-
+  
   if (tokens[p].type == '-') {
     p++;
     return new_op_node('-', left, expr());
@@ -75,7 +74,6 @@ Node *expr() {
   
   ERROR("Unexpected expression token: %s\n", tokens[p].input);
 }
-*/
 
 
 /**
@@ -218,11 +216,11 @@ void print_node(Node *node) {
   switch (node->type) {
   case '+':
     fprintf(stderr, "value: %d\n", node->value);
-    fprintf(stderr, "type: %d\n", node->type);
+    fprintf(stderr, "type: %c\n", node->type);
     break;
   case '-':
     fprintf(stderr, "value: %d\n", node->value);
-    fprintf(stderr, "type: %d\n", node->type);
+    fprintf(stderr, "type: %c\n", node->type);
     break;
   }
 
@@ -230,24 +228,32 @@ void print_node(Node *node) {
 }
 
 
+/**
+   Trace all tree and output assembler code.
+ */
 void trace_node_tree(Node *node) {
   if (node->type == NODE_NUM) {
-    printf("  mov rax, %d\n", node->value);
+    printf("  push %d\n", node->value);
     return;   // return because leaf node.
   }
 
   // internal node
   trace_node_tree(node->left);   // trace left hand tree
   trace_node_tree(node->right);  // trace right hand tree
+
+  printf("  pop rdi\n");
+  printf("  pop rax\n");
   
   switch (node->type) {
   case '+':
-    printf("  add rax, %d\n", node->value);
+    printf("  add rax, rdi\n");
     break;
   case '-':
-    printf("  sub rax, %d\n", node->value);
+    printf("  sub rax, rdi\n");
     break;
   }
+  
+  printf("  push rax\n");
   
   return;
 }
@@ -265,7 +271,7 @@ int main(int argc, char **argv) {
   tokenize(argv[1]);
   print_token(tokens);
 
-  Node *node = factor();
+  Node *node = expr();
   print_node(node);
 
   printf(".intel_syntax noprefix\n");
@@ -276,7 +282,8 @@ int main(int argc, char **argv) {
   printf("_main:\n"); // change main to _main for mac
 
   trace_node_tree(node);
-  
+
+  printf("  pop rax\n");
   printf("  ret\n");
   
   return 0;
