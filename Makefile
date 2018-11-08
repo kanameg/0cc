@@ -5,6 +5,8 @@ OBJS=$(SRCS:.c=.o)
 
 0cc: $(OBJS)
 
+$(OBJS): 0cc.h
+
 test: 0cc
 	./test.sh
 
