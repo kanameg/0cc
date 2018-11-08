@@ -3,6 +3,7 @@ CFLAG=-Wall -std=c11
 SRCS=$(wildcard *.c)
 OBJS=$(SRCS:.c=.o)
 
+
 0cc: $(OBJS)
 
 $(OBJS): 0cc.h
