@@ -1,17 +1,21 @@
 % 四則演算 文法
 
-式	: 項
-	| 項 '+' 式
+式	: 項 '+' 式
 	| 項 '-' 式
+	| 項
 
-項	: 因子
-	| 因子 '*' 項
+項	: 因子 '*' 項
 	| 因子 '/' 項
+	| 因子
 
 因子	: 数字
 	| '(' 式 ')'
 
 
+
+G2 {Vn, Vt, P, S}
+Vn {expr, term, factor number}
+Vt {+, -, *, /, (, ), digit}
 
 expr	: term '+' expr
 	| term '-' expr
@@ -21,6 +25,10 @@ term 	: factor '*' term
 	| factor '/' term
 	| factor
 
-factor 	: '(' expr ')'
-	| number
+factor 	: number
+	| '(' expr ')'
+
+number  : '-' number
+	| digit number
+	| digit
 
