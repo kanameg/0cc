@@ -72,7 +72,8 @@ Node *expr() {
     return new_op_node('-', left, expr());
   }
   
-  ERROR("Unexpected expression token: %s\n", tokens[p].input);
+  //ERROR("Unexpected expression token: %s\n", tokens[p].input);
+  return left;
 }
 
 
@@ -112,8 +113,7 @@ Node *factor() {
   
   if (tokens[p].type == '(') {
     p++;
-    //Node *node = expr();
-    Node *node = factor();
+    Node *node = expr();
     if (tokens[p].type != ')') {
       ERROR("Expected ), but token is: %s\n", tokens[p].input);
     }
@@ -173,56 +173,15 @@ void tokenize(char *p) {
 */
 void print_token(Token *tokens) {
   int i = 0;
-  fprintf(stderr, "----------------------------------------------------\n");
+  fprintf(stderr, "[");
   while (tokens[i].type != TOKEN_EOT) {
-    fprintf(stderr, "Token[%d]\n", i);
-    if (tokens[i].type == TOKEN_NUM) {
-      fprintf(stderr, "	value: %d\n", tokens[i].value);
-      fprintf(stderr, "	type: %d\n", tokens[i].type);
-      fprintf(stderr, "	input: %s\n", tokens[i].input);
-    }
-    if (tokens[i].type == '+' || tokens[i].type == '-' ||
-	tokens[i].type == '*' || tokens[i].type == '/' ||
-	tokens[i].type == '(' || tokens[i].type == ')') {
-      fprintf(stderr, "	value: %c\n", tokens[i].value);
-      fprintf(stderr, "	type: %d\n", tokens[i].type);
-      fprintf(stderr, "	input: %s\n", tokens[i].input);
-    }
+    if (tokens[i].type == TOKEN_NUM)
+      fprintf(stderr, "%d, ", tokens[i].value);
+    else
+      fprintf(stderr, "%c, ", tokens[i].value);
     i++;
   }
-  fprintf(stderr, "EOT\n");
-  fprintf(stderr, "	value: %c\n", tokens[i].value);
-  fprintf(stderr, "	type: %d\n", tokens[i].type);
-  fprintf(stderr, "	input: %s\n", tokens[i].input);
-  fprintf(stderr, "----------------------------------------------------\n");
-}
-
-
-/**
-   Print all nodes
- */
-void print_node(Node *node) {
-  if (node->type == NODE_NUM) {
-    fprintf(stderr, "value: %d\n", node->value);
-    fprintf(stderr, "type: %d\n", node->type);
-    return;
-  }
-
-  print_node(node->left);
-  print_node(node->right);
-
-  switch (node->type) {
-  case '+':
-    fprintf(stderr, "value: %d\n", node->value);
-    fprintf(stderr, "type: %c\n", node->type);
-    break;
-  case '-':
-    fprintf(stderr, "value: %d\n", node->value);
-    fprintf(stderr, "type: %c\n", node->type);
-    break;
-  }
-
-  return;
+  fprintf(stderr, "EOT]\n");
 }
 
 
@@ -234,7 +193,7 @@ void trace_node_tree(Node *node) {
     printf("  push %d\n", node->value);
     return;   // return because leaf node.
   }
-
+  
   // internal node
   trace_node_tree(node->left);   // trace left hand tree
   trace_node_tree(node->right);  // trace right hand tree
@@ -274,11 +233,10 @@ int main(int argc, char **argv) {
   }
   
   tokenize(argv[1]);
-  //print_token(tokens);
+  print_token(tokens);
 
   Node *node = expr();
-  //print_node(node);
-
+  
   printf(".intel_syntax noprefix\n");
   printf("\n");
   printf(".global _main\n"); // change main to _main for mac
@@ -287,7 +245,7 @@ int main(int argc, char **argv) {
   printf("_main:\n"); // change main to _main for mac
 
   trace_node_tree(node);
-
+  
   printf("  pop rax\n");
   printf("  ret\n");
   

@@ -10,8 +10,10 @@ try() {
     actual="$?"
 
     if [ "$actual" != "$expected" ]; then
-	echo "$expected expected, but got $actual"
+	echo -e "\033[0;31mNG:\033[0;39m $expected expected, but got $actual"
 	exit 1
+    else
+	echo -e "\033[0;32mOK:\033[0;39m $input = $actual"
     fi
 }
 
@@ -20,6 +22,9 @@ try 0 0
 try 128 128
 try 255 255
 try 127 '(127)'
+
+echo '========== ()'
+try 3 '(1 + 2)'
 
 echo '========== add sub'
 try 255 '128+127'
@@ -34,5 +39,8 @@ try 10 '200 / 20'
 
 echo '========== mix'
 try 26 '2*3+4*5'
+try 70 '2*(3+4)*5'
 
-echo OK
+echo
+echo -e "\033[0;32mAll test is OK\033[0;39m"
+echo
