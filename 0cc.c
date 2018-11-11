@@ -57,7 +57,7 @@ void delete_node(Node *node) {
    Expression parser
 */
 Node *expr() {
-  Node *left = factor();
+  Node *left = term();
   
   if (tokens[p].type == TOKEN_EOT)
     return left;
@@ -79,7 +79,6 @@ Node *expr() {
 /**
    Term parser
 */
-/*
 Node *term() {
   Node *left = factor();
 
@@ -90,16 +89,15 @@ Node *term() {
     p++;
     return new_op_node('*', left, term());
   }
-
+  
   if (tokens[p].type == '/') {
     p++;
     return new_op_node('/', left, term());
   }
   
-  error(p);
-  return NULL;
+  //ERROR("Unexpected term token: %s\n", tokens[p].input);
+  return left;
 }
-*/
 
 
 /**
@@ -251,6 +249,13 @@ void trace_node_tree(Node *node) {
   case '-':
     printf("  sub rax, rdi\n");
     break;
+  case '*':
+    printf("  mul rdi\n");
+    break;
+  case '/':
+    printf("  mov rdx, 0\n");
+    printf("  div rdi\n");
+    break;
   }
   
   printf("  push rax\n");
@@ -269,10 +274,10 @@ int main(int argc, char **argv) {
   }
   
   tokenize(argv[1]);
-  print_token(tokens);
+  //print_token(tokens);
 
   Node *node = expr();
-  print_node(node);
+  //print_node(node);
 
   printf(".intel_syntax noprefix\n");
   printf("\n");
