@@ -1,19 +1,23 @@
 #!/bin/bash
 
+r='\033[0;31m'
+g='\033[0;32m'
+w='\033[0;39m'
+
 try() {
     expected="$1"
     input="$2"
 
-    ./0cc "$input" > tmp.s
+    ./0cc "${input}" > tmp.s
     gcc -o tmp tmp.s
     ./tmp
     actual="$?"
 
-    if [ "$actual" != "$expected" ]; then
-	echo -e "\033[0;31mNG:\033[0;39m $expected expected, but got $actual"
+    if [ "${actual}" != "${expected}" ]; then
+	echo -e "${r}NG:${w} $expected expected, but got $actual"
 	exit 1
     else
-	echo -e "\033[0;32mOK:\033[0;39m $input = $actual"
+	echo -e "${g}OK:${w} ${input} = ${actual}"
     fi
 }
 
@@ -42,5 +46,5 @@ try 26 '2*3+4*5'
 try 70 '2*(3+4)*5'
 
 echo
-echo -e "\033[0;32mAll test is OK\033[0;39m"
+echo -e "${g}All test is OK${w}"
 echo
