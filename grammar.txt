@@ -15,20 +15,92 @@
 
 G2 {Vn, Vt, P, S}
 Vn {expr, term, factor number}
-Vt {+, -, *, /, (, ), digit}
+Vt {+, -, *, /, (, ), number}
 
-expr	: term '+' expr
-	| term '-' expr
+文法2 (Grammar 2)
+expr	: expr '+' term
+	| expr '-' term
 	| term
 
-term 	: factor '*' term
-	| factor '/' term
+term	: term '*' factor
+	| term '/' factor
 	| factor
 
-factor 	: number
-	| '(' expr ')'
+factor	: '(' expr ')'
+	| number
 
-number  : '-' number
-	| digit number
-	| digit
+ただし文法1は左再帰のため解析不可
+
+
+
+左再帰を削除して以下の文法を生成
+文法2' (Grammar 2')
+expr	: term expr2
+
+expr2	: '+' term expr2
+	| '-' term expr2
+	| e
+
+term	: factor term2
+
+term2	: '*' factor term2
+	| '/' factor term2
+	| e
+
+factor	: '(' expr ')'
+	| number
+	
+
+例えば
+式 '1 + 2' の場合
+
+expr()
+  term()
+  expr2()
+
+
+expr2()
+  '+' | '-'
+    mknode('+' | '-')
+    term()
+    expr2()
+
+
+term()
+  factor()
+  term2()
+
+
+term2()
+  '*' | '/'
+    mknode('*' | '/')
+    factor()
+    term2()
+
+
+factor()
+  '('
+    expr()
+    ')'
+  number()
+  mknode(number)
+
+
+call stack
+  expr('1 - 2')
+  term('1 - 2')
+  factor('1 - 2')
+  number('1 - 2')
+  mknod('1')
+  term2('- 2')
+  expr2('- 2')
+  mknod('-')
+  term('2')
+  factor('2')
+  number('2')
+  mknod('2')
+  term2(EOT)
+  expr2(EOT)
+解析完了!
+
 
