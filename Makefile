@@ -1,3 +1,6 @@
+#
+# Makefile for 0cc
+#
 CC=gcc
 CFLAG=-Wall -std=c11
 SRCS=$(wildcard *.c)
