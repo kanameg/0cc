@@ -81,7 +81,7 @@ void generate_return(void);
 void generate_op(int op);
 void generate_num(int num);
 void generate_code(Node *node);
-void genarater(Node *node);
+void generator(Node *node);
 
 void error(int i);
 
