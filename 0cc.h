@@ -74,6 +74,8 @@ Node *expr2(Node *left);
 void tokenize(char *p);
 void print_token(Token *tokens);
 
+void genarate_code(Node *node);
+
 void error(int i);
 
 /**

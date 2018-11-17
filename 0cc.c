@@ -218,17 +218,17 @@ void print_token(Token *tokens) {
 
 
 /**
-   Trace all tree and output assembler code.
+   Trace all node tree and generate assembler code.
  */
-void trace_node_tree(Node *node) {
+void generate_code(Node *node) {
   if (node->type == NODE_NUM) {
     printf("  push %d\n", node->value);
     return;   // return because leaf node.
   }
   
   // internal node
-  trace_node_tree(node->left);   // trace left hand tree
-  trace_node_tree(node->right);  // trace right hand tree
+  generate_code(node->left);   // trace left hand tree and genarate code
+  generate_code(node->right);  // trace right hand tree and generate code
 
   printf("  pop rdi\n");
   printf("  pop rax\n");
@@ -263,10 +263,11 @@ int main(int argc, char **argv) {
     fprintf(stderr, "Not correct number of argument.\n");
     return 1;
   }
-  
-  tokenize(argv[1]);
-  print_token(tokens);
 
+  // lexical analysis    make tokens
+  tokenize(argv[1]);
+
+  // syntactic analysis   make abstract syntax tree.
   Node *node = expr();
   
   printf(".intel_syntax noprefix\n");
@@ -276,7 +277,7 @@ int main(int argc, char **argv) {
   printf(".text\n");
   printf("_main:\n"); // change main to _main for mac
 
-  trace_node_tree(node);
+  generate_code(node);
   
   printf("  pop rax\n");
   printf("  ret\n");
