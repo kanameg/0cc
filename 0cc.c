@@ -56,6 +56,7 @@ void delete_node(Node *node) {
 
 /**
    Expression parser
+   E : T E'
 */
 Node *expr() {
   Node *left = term();
@@ -65,6 +66,9 @@ Node *expr() {
 
 /**
    Expression' parser
+   E' : '+' T E'
+      | '-' T E'
+      | e
  */
 Node *expr2(Node *left) {
   if (tokens[p].type == '+') {
@@ -82,6 +86,7 @@ Node *expr2(Node *left) {
 
 /**
    Term parser
+   T : F T'
 */
 Node *term() {
   Node *left = factor();
@@ -92,6 +97,9 @@ Node *term() {
 
 /**
    Term' parser
+   T' : '*' F T'
+      | '/' F T'
+      | e
 */
 Node *term2(Node *left) {
   if (tokens[p].type == '*') {
@@ -109,6 +117,8 @@ Node *term2(Node *left) {
 
 /**
    Factor parser
+   F : number
+     | '(' E ')'
 */
 Node *factor() {
   if (tokens[p].type == TOKEN_NUM) {
