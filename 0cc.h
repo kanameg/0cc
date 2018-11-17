@@ -61,20 +61,27 @@ typedef struct {
 /**
  * Declare function
  */
+Node *parser(void);
+
 Node *new_op_node(int op, Node *left, Node *right);
 Node *new_num_node(int value);
 void delete_node(Node *node);
 
-Node *factor();
-Node *term();
+Node *factor(void);
+Node *term(void);
 Node *term2(Node *left);
-Node *expr();
+Node *expr(void);
 Node *expr2(Node *left);
 
 void tokenize(char *p);
 void print_token(Token *tokens);
 
-void genarate_code(Node *node);
+void generate_start(void);
+void generate_return(void);
+void generate_op(int op);
+void generate_num(int num);
+void generate_code(Node *node);
+void genarater(Node *node);
 
 void error(int i);
 

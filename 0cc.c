@@ -17,6 +17,15 @@ int p = 0;
 Token tokens[100];  // result of tokenized
 
 
+
+/**
+   Program parser (Syntax analyzer)
+ */
+Node *parser(void) {
+  return expr();
+}
+
+
 /**
    Make new operator node
 */
@@ -51,6 +60,8 @@ Node *new_num_node(int value) {
 void delete_node(Node *node) {
   if (node != NULL)
     free(node);
+  
+  return;
 }
 
 
@@ -58,7 +69,7 @@ void delete_node(Node *node) {
    Expression parser
    E : T E'
 */
-Node *expr() {
+Node *expr(void) {
   Node *left = term();
   return expr2(left);
 }
@@ -88,7 +99,7 @@ Node *expr2(Node *left) {
    Term parser
    T : F T'
 */
-Node *term() {
+Node *term(void) {
   Node *left = factor();
   
   return term2(left);
@@ -110,7 +121,7 @@ Node *term2(Node *left) {
     p++;
     return term2(new_op_node('/', left, factor()));
   }
-
+  
   return left;
 }
 
@@ -120,7 +131,7 @@ Node *term2(Node *left) {
    F : number
      | '(' E ')'
 */
-Node *factor() {
+Node *factor(void) {
   if (tokens[p].type == TOKEN_NUM) {
     Node *node = new_num_node(tokens[p].value);
     p++;
@@ -197,6 +208,8 @@ void tokenize(char *p) {
     fprintf(stderr, "Cannot tokenize: %s \n", p);
     exit(1);
   }
+
+  return;
 }
 
 
@@ -214,26 +227,45 @@ void print_token(Token *tokens) {
     i++;
   }
   fprintf(stderr, "EOT]\n");
+
+  return;
 }
 
 
 /**
-   Trace all node tree and generate assembler code.
+   Genarate assembler start code
  */
-void generate_code(Node *node) {
-  if (node->type == NODE_NUM) {
-    printf("  push %d\n", node->value);
-    return;   // return because leaf node.
-  }
-  
-  // internal node
-  generate_code(node->left);   // trace left hand tree and genarate code
-  generate_code(node->right);  // trace right hand tree and generate code
+void generate_start(void) {
+  printf(".intel_syntax noprefix\n");
+  printf("\n");
+  printf(".global _main\n"); // change main to _main for mac
+  printf("\n");
+  printf(".text\n");
+  printf("_main:\n"); // change main to _main for mac
 
+  return;
+}
+
+
+/**
+   Generate assembler of 'return' code
+ */
+void generate_return(void) {
+  printf("  pop rax\n");
+  printf("  ret\n");
+
+  return;
+}
+
+
+/**
+   Generate assembler of opcode
+ */
+void generate_op(int op) {
   printf("  pop rdi\n");
   printf("  pop rax\n");
   
-  switch (node->type) {
+  switch (op) {
   case '+':
     printf("  add rax, rdi\n");
     break;
@@ -248,10 +280,50 @@ void generate_code(Node *node) {
     printf("  div rdi\n");
     break;
   }
-  
   printf("  push rax\n");
   
   return;
+}
+
+
+/**
+   Generate assembler of number code
+ */
+void generate_num(int num) {
+  printf("  push %d\n", num);
+
+  return;
+}
+
+
+/**
+   Generate assembler of program code
+ */
+void generate_code(Node *node) {
+  if (node->type == NODE_NUM) {
+    generate_num(node->value);
+    return;   // return because leaf node.
+  }
+  
+  // internal node
+  generate_code(node->left);   // trace left hand tree and genarate code
+  generate_code(node->right);  // trace right hand tree and generate code
+
+  generate_op(node->type);
+  
+  return;
+}
+
+
+/**
+   Assember code generator
+ */
+void generator(Node *node) {
+  generate_start();
+  
+  generate_code(node);
+
+  generate_return();
 }
 
 
@@ -263,24 +335,15 @@ int main(int argc, char **argv) {
     fprintf(stderr, "Not correct number of argument.\n");
     return 1;
   }
-
+  
   // lexical analysis    make tokens
   tokenize(argv[1]);
 
-  // syntactic analysis   make abstract syntax tree.
-  Node *node = expr();
-  
-  printf(".intel_syntax noprefix\n");
-  printf("\n");
-  printf(".global _main\n"); // change main to _main for mac
-  printf("\n");
-  printf(".text\n");
-  printf("_main:\n"); // change main to _main for mac
+  // syntactic analysis  make abstract syntax tree.
+  Node *node = parser();
 
-  generate_code(node);
-  
-  printf("  pop rax\n");
-  printf("  ret\n");
+  // code generator
+  generator(node);
   
   return 0;
 }
