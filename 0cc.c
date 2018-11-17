@@ -26,6 +26,7 @@ Node *new_op_node(int op, Node *left, Node *right) {
   node->type = op;
   node->left = left;
   node->right = right;
+  //fprintf(stderr, "op: %c, left: %d, right: %d\n", op, left->value, right->value);
   
   return node;
 }
@@ -58,23 +59,25 @@ void delete_node(Node *node) {
 */
 Node *expr() {
   Node *left = term();
-  
-  if (tokens[p].type == TOKEN_EOT)
-    return left;
-  
+  return expr2(left);
+}
+
+
+/**
+   Expression' parser
+ */
+Node *expr2(Node *left) {
   if (tokens[p].type == '+') {
     p++;
-    return new_op_node('+', left, expr());
+    return expr2(new_op_node('+', left, term()));
   }
-  
   if (tokens[p].type == '-') {
     p++;
-    return new_op_node('-', left, expr());
+    return expr2(new_op_node('-', left, term()));
   }
   
-  //ERROR("Unexpected expression token: %s\n", tokens[p].input);
   return left;
-}
+}    
 
 
 /**
@@ -82,21 +85,24 @@ Node *expr() {
 */
 Node *term() {
   Node *left = factor();
+  
+  return term2(left);
+}
 
-  if (tokens[p].type == TOKEN_EOT)
-    return left;
 
+/**
+   Term' parser
+*/
+Node *term2(Node *left) {
   if (tokens[p].type == '*') {
     p++;
-    return new_op_node('*', left, term());
+    return term2(new_op_node('*', left, factor()));
   }
-  
   if (tokens[p].type == '/') {
     p++;
-    return new_op_node('/', left, term());
+    return term2(new_op_node('/', left, factor()));
   }
-  
-  //ERROR("Unexpected term token: %s\n", tokens[p].input);
+
   return left;
 }
 

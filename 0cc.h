@@ -67,7 +67,9 @@ void delete_node(Node *node);
 
 Node *factor();
 Node *term();
+Node *term2(Node *left);
 Node *expr();
+Node *expr2(Node *left);
 
 void tokenize(char *p);
 void print_token(Token *tokens);
