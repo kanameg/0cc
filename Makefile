@@ -8,6 +8,7 @@ OBJS=$(SRCS:.c=.o)
 
 
 0cc: $(OBJS)
+	$(CC) -o $@ $(OBJS)
 
 $(OBJS): 0cc.h
 
