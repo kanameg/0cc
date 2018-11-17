@@ -14,8 +14,8 @@
 
 
 G2 {Vn, Vt, P, S}
-Vn {expr, term, factor number}
-Vt {+, -, *, /, (, ), number, ident}
+Vn {program, expr, term, factor}
+Vt {'+', '-', '*', '/', '(', ')', ';', number, ident}
 
 文法2 (Grammar 2)
 
