@@ -15,19 +15,41 @@
 
 G2 {Vn, Vt, P, S}
 Vn {expr, term, factor number}
-Vt {+, -, *, /, (, ), number}
+Vt {+, -, *, /, (, ), number, ident}
 
 文法2 (Grammar 2)
-expr	: expr '+' term
-	| expr '-' term
-	| term
 
-term	: term '*' factor
-	| term '/' factor
-	| factor
+program	  : ident '=' expr ';'
+	  | expr ';'
+	  
+expr	  : expr '+' term
+	  | expr '-' term
+	  | term
 
-factor	: '(' expr ')'
-	| number
+term	  : term '*' factor
+	  | term '/' factor
+	  | factor
+
+factor	  : '(' expr ')'
+	  | number
+
+
+
+
+
+program   : assign program'
+
+program'  : E | assign program'
+
+assign	  : expr assign' ';'
+
+assign'	  : E | '=' expr assign'
+
+
+
+
+
+
 
 ただし文法1は左再帰のため解析不可
 
