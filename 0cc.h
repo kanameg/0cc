@@ -42,6 +42,7 @@ typedef struct Node {
 */
 enum {
       TOKEN_NUM = 256, // integer token
+      TOKEN_IDENT,     // identifier token
       TOKEN_EOT,       // end of token
 };
 

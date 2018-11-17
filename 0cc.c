@@ -140,8 +140,28 @@ void tokenize(char *p) {
     
     // token char
     if (*p == '+' || *p == '-' || *p == '*' || *p == '/' ||
-	*p == '(' || *p == ')') {
+	*p == '(' || *p == ')' || *p == '=') {
       tokens[i].type = *p;
+      tokens[i].input = p;
+      tokens[i].value = *p;
+      p++;
+      i++;
+      continue;
+    }
+
+    // token variable
+    if (*p >= 'a' && *p <= 'z') {
+      tokens[i].type = TOKEN_IDENT;
+      tokens[i].input = p;
+      tokens[i].value = *p;
+      p++;
+      i++;
+      continue;
+    }
+
+    // token EOT
+    if (*p == ';') {
+      tokens[i].type = TOKEN_EOT;
       tokens[i].input = p;
       tokens[i].value = *p;
       p++;
@@ -161,10 +181,6 @@ void tokenize(char *p) {
     fprintf(stderr, "Cannot tokenize: %s \n", p);
     exit(1);
   }
-
-  tokens[i].type = TOKEN_EOT;
-  tokens[i].input = p;
-  tokens[i].value = *p;
 }
 
 
