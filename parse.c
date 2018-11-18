@@ -1,7 +1,7 @@
 #include "0cc.h"
 
 /**
-   This is a recursive-descendent parser which make abstract syntax tree
+   This is a recursive-descent parser which make abstract syntax tree
    from input program tokens.
  */
 
@@ -16,83 +16,52 @@ Node *parser(void) {
 
 /**
    Expression parser
-   E : T E'
+   E : T {'+' T}
+     | T {'-' T}
 */
 Node *expr(void) {
   Node *left = term();
-  return expr2(left);
-}
 
+  while (tokens[p].type == '+' || tokens[p].type == '-')
+    left = new_op_node(tokens[p++].type, left, term());
 
-/**
-   Expression' parser
-   E' : '+' T E'
-      | '-' T E'
-      | e
- */
-Node *expr2(Node *left) {
-  if (tokens[p].type == '+') {
-    p++;
-    return expr2(new_op_node('+', left, term()));
-  }
-  if (tokens[p].type == '-') {
-    p++;
-    return expr2(new_op_node('-', left, term()));
-  }
-  
   return left;
-}    
+}
 
 
 /**
    Term parser
-   T : F T'
+   T : F {'*' F}
+     | F {'/' F}
 */
 Node *term(void) {
   Node *left = factor();
   
-  return term2(left);
-}
+  while (tokens[p].type == '*' || tokens[p].type == '/')
+    left = new_op_node(tokens[p++].type, left, factor());
 
-
-/**
-   Term' parser
-   T' : '*' F T'
-      | '/' F T'
-      | e
-*/
-Node *term2(Node *left) {
-  if (tokens[p].type == '*') {
-    p++;
-    return term2(new_op_node('*', left, factor()));
-  }
-  if (tokens[p].type == '/') {
-    p++;
-    return term2(new_op_node('/', left, factor()));
-  }
-  
   return left;
 }
 
 
 /**
    Factor parser
-   F : number
-     | '(' E ')'
+   F : '(' E ')'
+     | number
 */
 Node *factor(void) {
-  if (tokens[p].type == TOKEN_NUM) {
-    Node *node = new_num_node(tokens[p].value);
-    p++;
-    return node;
-  }
-  
   if (tokens[p].type == '(') {
     p++;
     Node *node = expr();
     if (tokens[p].type != ')') {
       ERROR("Expected ), but token is: %s\n", tokens[p].input);
     }
+    p++;
+    return node;
+  }
+  
+  if (tokens[p].type == TOKEN_NUM) {
+    Node *node = new_num_node(tokens[p].value);
     p++;
     return node;
   }
