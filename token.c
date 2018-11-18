@@ -78,16 +78,6 @@ void tokenize(char *p) {
       continue;
     }
 
-    // token EOT
-    if (*p == ';') {
-      tokens[i].type = TOKEN_EOT;
-      tokens[i].input = p;
-      tokens[i].value = *p;
-      p++;
-      i++;
-      continue;
-    }
-    
     // integer token
     if (isdigit(*p)) {
       tokens[i].type = TOKEN_NUM;
@@ -100,6 +90,12 @@ void tokenize(char *p) {
     fprintf(stderr, "Cannot tokenize: %s \n", p);
     exit(1);
   }
+
+  // token EOT
+  tokens[i].type = TOKEN_EOT;
+  tokens[i].input = p;
+  tokens[i].value = *p;
+  i++;
 
   return;
 }
