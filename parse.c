@@ -2,7 +2,7 @@
 
 /**
    This is a recursive-descent parser which make abstract syntax tree
-   from input program tokens.
+   from program tokens array.
  */
 
 
