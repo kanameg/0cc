@@ -13,15 +13,11 @@
 
 
 
-G2 {Vn, Vt, P, S}
+文法G1 {Vn, Vt, P, S}
 Vn {program, expr, term, factor}
-Vt {'+', '-', '*', '/', '(', ')', ';', number, ident}
+Vt {'+', '-', '*', '/', '(', ')', ';', number}
 
-文法2 (Grammar 2)
-
-program	  : ident '=' expr ';'
-	  | expr ';'
-	  
+文法1 (Grammar 1)
 expr	  : expr '+' term
 	  | expr '-' term
 	  | term
@@ -34,95 +30,43 @@ factor	  : '(' expr ')'
 	  | number
 
 
+ただし文法G1は左再帰のため解析不可
+左再帰を削除して以下の文法G2を生成
 
+文法2 (Grammar 2)
+expr	: term expr'
 
-
-program   : assign program'
-
-program'  : E | assign program'
-
-assign	  : expr assign' ';'
-
-assign'	  : E | '=' expr assign'
-
-
-
-
-
-
-
-ただし文法1は左再帰のため解析不可
-
-
-
-左再帰を削除して以下の文法を生成
-文法2' (Grammar 2')
-expr	: term expr2
-
-expr2	: '+' term expr2
-	| '-' term expr2
+expr'	: '+' term expr'
+	| '-' term expr'
 	| e
 
-term	: factor term2
+term	: factor term'
 
-term2	: '*' factor term2
-	| '/' factor term2
+term'	: '*' factor term'
+	| '/' factor term'
 	| e
 
 factor	: '(' expr ')'
 	| number
-	
-
-例えば
-式 '1 + 2' の場合
-
-expr()
-  term()
-  expr2()
 
 
-expr2()
-  '+' | '-'
-    mknode('+' | '-')
-    term()
-    expr2()
+正規右辺文法を使用して置き換えを置こうなと
+より簡潔な文法G3が生成される
 
+文法3 (Grammar 3)
+expr  	: term {'+' term}
+      	| term {'-' term}
 
-term()
-  factor()
-  term2()
+term  	: factor {'*' factor}
+      	| factor {'/' factor}
 
+factor	: '(' expr ')'
+	| number
 
-term2()
-  '*' | '/'
-    mknode('*' | '/')
-    factor()
-    term2()
-
-
-factor()
-  '('
-    expr()
-    ')'
-  number()
-  mknode(number)
-
-
-call stack
-  expr('1 - 2')
-  term('1 - 2')
-  factor('1 - 2')
-  number('1 - 2')
-  mknod('1')
-  term2('- 2')
-  expr2('- 2')
-  mknod('-')
-  term('2')
-  factor('2')
-  number('2')
-  mknod('2')
-  term2(EOT)
-  expr2(EOT)
-解析完了!
-
-
+{}は、while文で括弧内の終端記号でなくなるまでに相当する
+ex)
+````
+while (v == '+' || v == '-') {
+    term();
+}
+````
