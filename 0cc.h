@@ -79,8 +79,9 @@ void print_token(Token *tokens);
 
 void generate_start(void);
 void generate_return(void);
-void generate_op(int op);
-void generate_num(int num);
+
+void generate_num(Node *node);
+void generate_op(Node *node);
 void generate_ident(Node *node);
 void generate_code(Node *node);
 void generator(Node *node);

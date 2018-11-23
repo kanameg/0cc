@@ -2,7 +2,7 @@
 # Makefile for 0cc
 #
 CC=gcc
-CFLAGS=-Wall -std=c11 -DCC0_DEBUG
+CFLAGS=-Wall -std=c11 # -DCC0_DEBUG
 SRCS=$(wildcard *.c)
 OBJS=$(SRCS:.c=.o)
 

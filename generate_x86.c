@@ -43,32 +43,32 @@ void generate_return(void) {
 /**
    Generate assembler of opcode
  */
-void generate_op(int op) {
+void generate_op(Node *node) {
   printf("  pop rdi\n");
   printf("  pop rax\n");
   
-  switch (op) {
+  switch (node->type) {
   case '+':
 #ifdef CC0_DEBUG
-    fprintf(stderr, "%c -> ", op);
+    fprintf(stderr, "%c -> ", node->type);
 #endif
     printf("  add rax, rdi\n");
     break;
   case '-':
-#ifdef CC0_DEBUG
-    fprintf(stderr, "%c -> ", op);
+#ifdef CC0_DEBUG1
+    fprintf(stderr, "%c -> ", node->type);
 #endif
     printf("  sub rax, rdi\n");
     break;
   case '*':
 #ifdef CC0_DEBUG
-    fprintf(stderr, "%c -> ", op);
+    fprintf(stderr, "%c -> ", node->type);
 #endif
     printf("  mul rdi\n");
     break;
   case '/':
 #ifdef CC0_DEBUG
-    fprintf(stderr, "%c -> ", op);
+    fprintf(stderr, "%c -> ", node->type);
 #endif
     printf("  mov rdx, 0\n");
     printf("  div rdi\n");
@@ -83,11 +83,11 @@ void generate_op(int op) {
 /**
    Generate assembler of number code
  */
-void generate_num(int num) {
+void generate_num(Node *node) {
 #ifdef CC0_DEBUG
-  fprintf(stderr, "%d -> ", num);
+  fprintf(stderr, "%d -> ", node->value);
 #endif
-  printf("  push %d\n", num);
+  printf("  push %d\n", node->value);
 
   return;
 }
@@ -114,7 +114,7 @@ void generate_ident(Node *node) {
  */
 void generate_code(Node *node) {
   if (node->type == NODE_NUM) {
-    generate_num(node->value);
+    generate_num(node);
     return;   // return because leaf node.
   }
 
@@ -137,7 +137,7 @@ void generate_code(Node *node) {
   generate_code(node->left);   // trace left hand tree and genarate code
   generate_code(node->right);  // trace right hand tree and generate code
 
-  generate_op(node->type);
+  generate_op(node);
 
   return;
 }

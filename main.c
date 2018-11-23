@@ -28,7 +28,7 @@ int main(int argc, char **argv) {
   
   // lexical analysis    make tokens
   tokenize(argv[1]);
-  print_token(tokens);
+  //print_token(tokens);
 
   // syntactic analysis  make abstract syntax tree.
   Node *node = parser();
