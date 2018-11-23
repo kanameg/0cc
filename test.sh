@@ -48,7 +48,8 @@ try 26 '2*3+4*5'
 try 70 '2*(3+4)*5'
 
 echo '========== variable'
-#try 26 'a = 2 * 3 + 4 * 5'
+try 25 'a = 12 + 13'
+try 100 'b = (12 + 13) * (10 - 6)'
 
 echo
 echo -e "${g}All test is OK${w}"

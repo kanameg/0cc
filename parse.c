@@ -10,9 +10,27 @@
    Program parser (Syntax analyzer)
  */
 Node *parser(void) {
-  return expr();
+  return program();
 }
 
+
+/**
+   Program parser
+   P : ident '=' E
+     | E
+ */
+Node *program(void) {
+  if (tokens[p].type == TOKEN_IDENT) {
+    Node *left = new_ident_node(tokens[p].value);
+    p++;
+    if (tokens[p].type == '=') {
+      return new_op_node(tokens[p++].type, left, expr());
+    }
+    ERROR("Unexpected program token: %s\n", tokens[p].input);  
+  }
+  
+  return expr();
+}
 
 /**
    Expression parser
@@ -22,8 +40,9 @@ Node *parser(void) {
 Node *expr(void) {
   Node *left = term();
 
-  while (tokens[p].type == '+' || tokens[p].type == '-')
+  while (tokens[p].type == '+' || tokens[p].type == '-') {
     left = new_op_node(tokens[p++].type, left, term());
+  }
 
   return left;
 }
@@ -37,8 +56,9 @@ Node *expr(void) {
 Node *term(void) {
   Node *left = factor();
   
-  while (tokens[p].type == '*' || tokens[p].type == '/')
+  while (tokens[p].type == '*' || tokens[p].type == '/') {
     left = new_op_node(tokens[p++].type, left, factor());
+  }
 
   return left;
 }

@@ -4,6 +4,19 @@
    Tokenizer
    This is a lexical analyzer.
  */
+/**
+   Make new identifier node
+*/
+Node *new_ident_node(int ident) {
+  Node *node = malloc(sizeof(Node));
+  
+  node->type = NODE_IDENT;
+  node->value = ident;
+  //fprintf(stderr, "op: %c, left: %d, right: %d\n", op, left->value, right->value);
+  
+  return node;
+}
+
 
 /**
    Make new operator node

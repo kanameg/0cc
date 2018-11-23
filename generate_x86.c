@@ -16,6 +16,10 @@ void generate_start(void) {
   printf(".text\n");
   printf("_main:\n"); // change main to _main for mac
 
+  // function prologue
+  printf("  push rbp\n");
+  printf("  mov rbp, rsp\n");
+
   return;
 }
 
@@ -24,7 +28,12 @@ void generate_start(void) {
    Generate assembler of 'return' code
  */
 void generate_return(void) {
-  printf("  pop rax\n");
+#ifdef CC0_DEBUG
+  fprintf(stderr, "\n");
+#endif
+  // function epilogue
+  printf("  mov rsp, rbp\n");
+  printf("  pop rbp\n");
   printf("  ret\n");
 
   return;
@@ -40,15 +49,27 @@ void generate_op(int op) {
   
   switch (op) {
   case '+':
+#ifdef CC0_DEBUG
+    fprintf(stderr, "%c -> ", op);
+#endif
     printf("  add rax, rdi\n");
     break;
   case '-':
+#ifdef CC0_DEBUG
+    fprintf(stderr, "%c -> ", op);
+#endif
     printf("  sub rax, rdi\n");
     break;
   case '*':
+#ifdef CC0_DEBUG
+    fprintf(stderr, "%c -> ", op);
+#endif
     printf("  mul rdi\n");
     break;
   case '/':
+#ifdef CC0_DEBUG
+    fprintf(stderr, "%c -> ", op);
+#endif
     printf("  mov rdx, 0\n");
     printf("  div rdi\n");
     break;
@@ -63,9 +84,28 @@ void generate_op(int op) {
    Generate assembler of number code
  */
 void generate_num(int num) {
+#ifdef CC0_DEBUG
+  fprintf(stderr, "%d -> ", num);
+#endif
   printf("  push %d\n", num);
 
   return;
+}
+
+
+/**
+   Generate assembler of identifier code
+ */
+void generate_ident(Node *node) {
+  if (node->type == NODE_IDENT) {
+#ifdef CC0_DEBUG
+    fprintf(stderr, "%c -> ", node->value);
+#endif
+    ; // identifier operation
+
+  }
+  
+  return;  
 }
 
 
@@ -77,13 +117,28 @@ void generate_code(Node *node) {
     generate_num(node->value);
     return;   // return because leaf node.
   }
+
+  if (node->type == NODE_IDENT) {
+    ;
+    return;
+  }
+
+  if (node->type == '=') {
+    generate_ident(node->left);
+    generate_code(node->right);
+#ifdef CC0_DEBUG
+    fprintf(stderr, "%c -> ", node->type);
+#endif
+    printf("  mov [rbp - 8], rax\n");  
+    return;
+  }
   
   // internal node
   generate_code(node->left);   // trace left hand tree and genarate code
   generate_code(node->right);  // trace right hand tree and generate code
 
   generate_op(node->type);
-  
+
   return;
 }
 
@@ -95,6 +150,8 @@ void generator(Node *node) {
   generate_start();
   
   generate_code(node);
+
+  printf("  pop rax\n");
 
   generate_return();
 }

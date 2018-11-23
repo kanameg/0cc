@@ -23,6 +23,7 @@
 */
 enum {
       NODE_NUM = 256, // integer node
+      NODE_IDENT,     // identifier node
 };
 
 
@@ -63,15 +64,15 @@ typedef struct {
  */
 Node *parser(void);
 
+Node *new_ident_node(int ident);
 Node *new_op_node(int op, Node *left, Node *right);
 Node *new_num_node(int value);
 void delete_node(Node *node);
 
 Node *factor(void);
 Node *term(void);
-Node *term2(Node *left);
 Node *expr(void);
-Node *expr2(Node *left);
+Node *program(void);
 
 void tokenize(char *p);
 void print_token(Token *tokens);
@@ -80,6 +81,7 @@ void generate_start(void);
 void generate_return(void);
 void generate_op(int op);
 void generate_num(int num);
+void generate_ident(Node *node);
 void generate_code(Node *node);
 void generator(Node *node);
 
