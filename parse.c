@@ -10,16 +10,16 @@
    Program parser (Syntax analyzer)
  */
 Node *parser(void) {
-  return program();
+  return statement();
 }
 
 
 /**
-   Program parser
-   P : ident '=' E
+   Statement parser
+   S : ident '=' E
      | E
  */
-Node *program(void) {
+Node *statement(void) {
   if (tokens[p].type == TOKEN_IDENT) {
     Node *left = new_ident_node(tokens[p].value);
     p++;
