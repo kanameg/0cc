@@ -6,16 +6,9 @@
 
 
 /**
-   Genarate assembler start code
+   Genetate prologue code
  */
-void generate_start(void) {
-  printf(".intel_syntax noprefix\n");
-  printf("\n");
-  printf(".global _main\n"); // change main to _main for mac
-  printf("\n");
-  printf(".text\n");
-  printf("_main:\n"); // change main to _main for mac
-
+void generate_prologue(void) {
   // function prologue
   printf("  push rbp\n");
   printf("  mov rbp, rsp\n");
@@ -25,27 +18,83 @@ void generate_start(void) {
 
 
 /**
-   Generate assembler of 'return' code
+   Generate code to make function frame for stack variable.
  */
-void generate_return(void) {
-#ifdef CC0_DEBUG
-  fprintf(stderr, "\n");
-#endif
+void generate_frame(int byte) {
+  printf("  sub rsp, %d\n", byte);
+}
+
+
+/**
+   Generate epilogue code
+ */
+void generate_eliplogue(void) {
   // function epilogue
   printf("  mov rsp, rbp\n");
   printf("  pop rbp\n");
-  printf("  ret\n");
+
+}
+
+
+/**
+   Generate pop rax
+ */
+void generate_popax(void) {
+  printf("  pop rax\n");
 
   return;
 }
 
 
 /**
-   Generate assembler of opcode
+   Generate push rax
+ */
+void generate_pushax(void) {
+  printf("  push rax\n");
+
+  return;
+}
+
+
+/**
+   Genarate assembler of main function start code
+ */
+void generate_start(void) {
+  printf(".intel_syntax noprefix\n");
+  printf("\n");
+  printf(".global _main\n"); // change main to _main for mac
+  printf("\n");
+  printf(".text\n");
+  printf("_main:\n"); // change main to _main for mac
+  
+  generate_prologue();
+  generate_frame(40);   // 40 byte space
+  
+  return;
+}
+
+
+/**
+   Generate assembler 'return' code
+ */
+void generate_return(void) {
+#ifdef CC0_DEBUG
+  fprintf(stderr, "\n");
+#endif
+  generate_popax();
+  generate_eliplogue();
+  printf("  ret\n");
+    
+  return;
+}
+
+
+/**
+   Generate assembler of binary opcode
  */
 void generate_op(Node *node) {
-  printf("  pop rdi\n");
-  printf("  pop rax\n");
+  printf("  pop rdi\n");  // postfix value
+  printf("  pop rax\n");  // prefix value
   
   switch (node->type) {
   case '+':
@@ -82,7 +131,7 @@ void generate_op(Node *node) {
 
 /**
    Generate assembler of number code
- */
+ p*/
 void generate_num(Node *node) {
 #ifdef CC0_DEBUG
   fprintf(stderr, "%d -> ", node->value);
@@ -150,8 +199,6 @@ void generator(Node *node) {
   generate_start();
   
   generate_code(node);
-
-  printf("  pop rax\n");
-
+  
   generate_return();
 }
