@@ -1,4 +1,5 @@
 #include "0cc.h"
+#include "reg.h"
 
 /**
    This is a assembler code generator for Intel x86 CPU.
@@ -37,21 +38,21 @@ void generate_eliplogue(void) {
 
 
 /**
-   Generate pop rax
+   Generate pop register
  */
-void generate_popax(void) {
-  printf("  pop rax\n");
-
+void generate_pop(char *reg) {
+  printf("  pop %s\n", reg);
+  
   return;
 }
 
 
 /**
-   Generate push rax
+   Generate push register
  */
-void generate_pushax(void) {
-  printf("  push rax\n");
-
+void generate_push(char *reg) {
+  printf("  push %s\n", reg);
+  
   return;
 }
 
@@ -81,7 +82,7 @@ void generate_return(void) {
 #ifdef CC0_DEBUG
   fprintf(stderr, "\n");
 #endif
-  generate_popax();
+  generate_pop(RAX);
   generate_eliplogue();
   printf("  ret\n");
     
@@ -123,7 +124,7 @@ void generate_op(Node *node) {
     printf("  div rdi\n");
     break;
   }
-  printf("  push rax\n");
+  generate_push(RAX);
   
   return;
 }
