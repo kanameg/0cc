@@ -99,6 +99,16 @@ void tokenize(char *p) {
       i++;
       continue;
     }
+
+    // end of line is end of token
+    if (*p == ';') {
+      tokens[i].type = TOKEN_EOT;
+      tokens[i].input = p;
+      tokens[i].value = *p;
+      p++;
+      i++;
+      continue;
+    }
     
     fprintf(stderr, "Cannot tokenize: %s \n", p);
     exit(1);
@@ -109,7 +119,7 @@ void tokenize(char *p) {
   tokens[i].input = p;
   tokens[i].value = *p;
   i++;
-
+  
   return;
 }
 
