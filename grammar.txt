@@ -63,10 +63,20 @@ term  	: factor {'*' factor}
 factor	: '(' expr ')'
 	| number
 
-{}は、while文で括弧内の終端記号でなくなるまでに相当する
-ex)
-````
-while (v == '+' || v == '-') {
-    term();
-}
-````
+
+
+文法3にstatementを追加
+文法3 (Grammar 3)
+
+state   : ident '=' expr ';'
+	| expr ';'
+	
+expr  	: term {'+' term}
+      	| term {'-' term}
+	
+term  	: factor {'*' factor}
+      	| factor {'/' factor}
+	
+factor	: '(' expr ')'
+	| number
+	
