@@ -1,20 +1,5 @@
-% 四則演算 文法
-
-式	: 項 '+' 式
-	| 項 '-' 式
-	| 項
-
-項	: 因子 '*' 項
-	| 因子 '/' 項
-	| 因子
-
-因子	: 数字
-	| '(' 式 ')'
-
-
-
 文法G1 {Vn, Vt, P, S}
-Vn {program, expr, term, factor}
+Vn {state, expr, term, factor}
 Vt {'+', '-', '*', '/', '(', ')', ';', number}
 
 文法1 (Grammar 1)
@@ -73,10 +58,27 @@ state   : ident '=' expr ';'
 	
 expr  	: term {'+' term}
       	| term {'-' term}
-	
+
+
+expr --+----------+--> term --+----------------------+--> 
+       |          |           |                      |
+       +--> '+' --+           +-- term <--+-- '+' <--+
+       |          |                       |          |
+       +--> '-' --+                       +-- '-' <--+
+
+
 term  	: factor {'*' factor}
       	| factor {'/' factor}
-	
-factor	: '(' expr ')'
-	| number
-	
+
+term --> factor --+------------------------+--> 
+	          |                        |
+                  +-- factor <--+-- '*' <--+
+                                |          |
+			        +-- '/' <--+
+factor	: ident
+	| '-' factor
+	| '+' factor
+	| '(' expr ')'
+
+factor
+
